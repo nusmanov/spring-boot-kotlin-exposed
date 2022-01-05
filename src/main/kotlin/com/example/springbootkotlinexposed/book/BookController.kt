@@ -1,5 +1,6 @@
-package com.example.springbootkotlinexposed
+package com.example.springbootkotlinexposed.book
 
+import com.example.springbootkotlinexposed.book.BookService
 import org.springframework.web.bind.annotation.*
 import kotlin.random.Random
 

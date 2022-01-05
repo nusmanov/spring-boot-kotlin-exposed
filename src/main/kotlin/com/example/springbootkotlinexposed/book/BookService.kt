@@ -1,7 +1,5 @@
-package com.example.springbootkotlinexposed
+package com.example.springbootkotlinexposed.book
 
-import org.jetbrains.exposed.sql.Op
-import org.jetbrains.exposed.sql.SqlExpressionBuilder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -12,6 +10,6 @@ class BookService(val repository: BookRepository) {
     fun getBooks(): List<BookDto> = repository.getAll()
 
     @Transactional
-    fun createBook(name: String): Int = repository.create(name)
+    fun createBook(title: String, author: Int? = null): Int = repository.create(title, author)
 
 }
