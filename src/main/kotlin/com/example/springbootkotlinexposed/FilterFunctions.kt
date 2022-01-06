@@ -6,14 +6,15 @@ import org.jetbrains.exposed.sql.*
 
 fun selectAllBooksForAuthorAndForItsChildrenFilter(query: Query): Query {
 
-    val contactChildren: Alias<PersonTable> = PersonTable.alias("contactChildren")
+    val personTable: Alias<PersonTable> = PersonTable.alias("personTable")
 
 
-    val contactsWithKidssss: QueryAlias = PersonTable
+    val personWithChildren: QueryAlias = PersonTable
         .leftJoin(
-            contactChildren, { PersonTable.id },
-            { contactChildren[PersonTable.parentId] })
-        // .slice(PersonTable.id, PersonTable.parentId)
+            personTable, { PersonTable.id },
+            { personTable[PersonTable.parentId] })
+         //.slice(PersonTable.id.alias("subselectPersonId"), PersonTable.parentId.alias("subselectPersonParentId"))
+         .slice(PersonTable.id, PersonTable.parentId)
         .selectAll()
         .alias("xyz")
 
@@ -21,9 +22,9 @@ fun selectAllBooksForAuthorAndForItsChildrenFilter(query: Query): Query {
 
         .adjustColumnSet {
             leftJoin(
-                contactsWithKidssss,
+                personWithChildren,
                 { BookTable.author },
-                { contactsWithKidssss[PersonTable.id] }
+                { personWithChildren[PersonTable.id] }
 
             )
         }

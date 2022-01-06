@@ -9,26 +9,29 @@ import org.springframework.stereotype.Repository
 @Repository
 class BookRepository {
 
-    fun getAll(): List<BookDto> = transaction { BookTable.selectAll().map { BookDto.fromResultRow(it) } }
 
-    fun create(bookName: String, bookAuthor: Int? = null): Int = transaction {
+    fun create(bookName: String, bookAuthor: Int? = null, bookCorrelationId: Int? = null): Int = transaction {
         BookTable.insertAndGetId {
             it[title] = bookName
             it[author] = bookAuthor
+            it[correlationId] = bookCorrelationId
         }.value
     }
 
     fun getBook(id: Int): BookDto {
         return transaction {
-            BookTable.select { BookTable.id eq id }.limit(1).single().let { BookDto.fromResultRow(it) }
+            BookTable.select { BookTable.id eq id }.single().let { BookDto.fromResultRow(it) }
         }
     }
 
-    fun getAllWithSearchParameter(): List<BookDto> =
+    fun getAll(searchFilter: SearchFilterDto = SearchFilterDto()): List<BookDto> =
 
         transaction {
             BookTable.selectAll()
-                .applyComplexFilter(true) { selectAllBooksForAuthorAndForItsChildrenFilter(this) }
-                .map(BookDto.Companion::fromResultRow)
+                // .andWhere { BookTable.correlationId eq searchFilter.correlationId }
+                .applyComplexFilter(searchFilter.booksFromAuthorAndHerChildren) {
+                    selectAllBooksForAuthorAndForItsChildrenFilter(this)
+                }
+                .map(BookDto::fromResultRow)
         }
 }

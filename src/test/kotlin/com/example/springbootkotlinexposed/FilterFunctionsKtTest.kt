@@ -26,7 +26,7 @@ internal class FilterFunctionsKtTest {
             val query = BookTable.selectAll().apply { selectAllBooksForAuthorAndForItsChildrenFilter(this) }
             // when
             assertEquals(
-                "SELECT ID.ID, ID.TITLE, ID.AUTHOR, xyz.ID, xyz.\"NAME\", xyz.AUTHOR, xyz.PARENT_ID, xyz.ID, xyz.\"NAME\", xyz.AUTHOR, xyz.PARENT_ID FROM ID LEFT JOIN (SELECT PERSON.ID, PERSON.\"NAME\", PERSON.AUTHOR, PERSON.PARENT_ID, contactChildren.ID, contactChildren.\"NAME\", contactChildren.AUTHOR, contactChildren.PARENT_ID FROM PERSON LEFT JOIN PERSON contactChildren ON PERSON.ID = contactChildren.PARENT_ID) xyz ON ID.AUTHOR = xyz.ID",
+                "SELECT BOOK.ID, BOOK.TITLE, BOOK.AUTHOR, xyz.ID, xyz.FIRSTNAME, xyz.PARENT_ID, xyz.ID, xyz.FIRSTNAME, xyz.PARENT_ID FROM BOOK LEFT JOIN (SELECT PERSON.ID, PERSON.FIRSTNAME, PERSON.PARENT_ID, contactChildren.ID, contactChildren.FIRSTNAME, contactChildren.PARENT_ID FROM PERSON LEFT JOIN PERSON contactChildren ON PERSON.ID = contactChildren.PARENT_ID) xyz ON BOOK.AUTHOR = xyz.ID",
                 query.prepareSQL(QueryBuilder(false))
             )
         }

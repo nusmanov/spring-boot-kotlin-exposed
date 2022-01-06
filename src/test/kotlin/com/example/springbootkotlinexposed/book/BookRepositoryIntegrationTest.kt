@@ -55,19 +55,26 @@ class BookRepositoryIntegrationTest {
 
     @Test
     @Transactional
-    fun test_search_parameters() {
-        // prepare
-        bookRepository.create("Java Book")
-        bookRepository.create("Kotlin Book")
+    fun test_search_parameters_left_join() {
 
-        val contactId1 = personRepository.create("Tom")
-        personRepository.create("Tom", contactId1)
+        // prepare
+        val personId1 = personRepository.create("Tom")
+        val personChild = personRepository.create("Tom", personId1)
+
+        val correlationId = 123
+        bookRepository.create("Java Book", personId1, correlationId)
+        bookRepository.create("Kotlin Book", personId1, correlationId)
+
+        bookRepository.create("This Book", personChild, correlationId)
+
+        bookRepository.create("Boring Book", 888, 999)
         // act
 
-        val books = bookRepository.getAllWithSearchParameter()
+        val books =
+            bookRepository.getAll(SearchFilterDto(correlationId = correlationId, booksFromAuthorAndHerChildren = true))
 
         // verify
-        Assertions.assertThat(bookRepository.getAll()).hasSize(2)
+        Assertions.assertThat(books).hasSize(3)
     }
 
     @Test
@@ -82,7 +89,7 @@ class BookRepositoryIntegrationTest {
         // act
 
         // verify
-        Assertions.assertThat(bookRepository.getAll()).hasSize(2)
+        Assertions.assertThat(bookRepository.getAll(SearchFilterDto())).hasSize(2)
     }
 
     @Test
