@@ -8,13 +8,11 @@ fun selectAllBooksForAuthorAndForItsChildrenFilter(query: Query): Query {
 
     val personTable: Alias<PersonTable> = PersonTable.alias("personTable")
 
-
     val personWithChildren: QueryAlias = PersonTable
         .leftJoin(
             personTable, { PersonTable.id },
             { personTable[PersonTable.parentId] })
-         //.slice(PersonTable.id.alias("subselectPersonId"), PersonTable.parentId.alias("subselectPersonParentId"))
-         .slice(PersonTable.id, PersonTable.parentId)
+        .slice(PersonTable.id, PersonTable.parentId)
         .selectAll()
         .alias("xyz")
 
@@ -28,7 +26,6 @@ fun selectAllBooksForAuthorAndForItsChildrenFilter(query: Query): Query {
 
             )
         }
-
         .adjustSlice { slice(fields) }
 
 }
